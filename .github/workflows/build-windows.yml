@@ -1,0 +1,39 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        pip install pyinstaller customtkinter python-nmap psutil
+
+    - name: Build EXE
+      run: |
+        pyinstaller --onefile --windowed --name "CyberSentinel" pro_security_gui.py
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/CyberSentinel.exe
+        tag_name: v1.0-auto
+        name: Auto-Build Windows EXE
+        body: "Automatically generated Windows EXE from latest code."
+        draft: false
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
