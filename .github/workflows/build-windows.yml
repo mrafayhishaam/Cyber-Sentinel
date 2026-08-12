@@ -6,34 +6,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
     
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install Dependencies
-      run: |
-        pip install pyinstaller customtkinter python-nmap psutil
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller customtkinter python-nmap psutil
 
-    - name: Build EXE
-      run: |
-        pyinstaller --onefile --windowed --name "CyberSentinel" pro_security_gui.py
+      - name: Build EXE
+        run: |
+          pyinstaller --onefile --windowed --name "CyberSentinel" pro_security_gui.py
 
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: dist/CyberSentinel.exe
-        tag_name: v1.0-auto
-        name: Auto-Build Windows EXE
-        body: "Automatically generated Windows EXE from latest code."
-        draft: false
-        prerelease: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: always()
+        with:
+          files: dist/CyberSentinel.exe
+          tag_name: v1.0-fixed
+          name: Cyber Sentinel Windows EXE (Fixed)
+          body: "Automatically built 64-bit Windows executable."
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
